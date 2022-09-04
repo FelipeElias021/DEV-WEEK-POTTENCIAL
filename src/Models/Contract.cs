@@ -2,6 +2,8 @@ namespace src.Models;
 
 public class Contract
 {
+    public int Id { get; set; }
+    public int PersonId { get; set; }
     public DateTime CriationDate { get; set; }
     public string TokenId { get; set; }
     public double Value { get; set; }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using src.Models;
-using System.Collections.Generic;
+using src.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace src.Controllers;
 
@@ -8,33 +9,36 @@ namespace src.Controllers;
 [Route("[controller]")]
 public class PersonController : ControllerBase 
 {
+    private DatabaseContext _repository { get; set; }
+
+    public PersonController(DatabaseContext context)
+    {
+        this._repository = context;
+    }
+
     [HttpGet]
     public List<Person> Get() {
-        List<Person> persons = new List<Person>();
-        Contract c1 = new Contract();
-        Contract c2 = new Contract(50, "00001");
-
-        persons.Add(new Person("Felipe", 19, "93372755049"));
-        persons.Add(new Person("Gabriel", 16, "54377865650"));
-
-        persons[0].Contracts.Add(c1);
-        persons[0].Contracts.Add(c2);
-
-        return persons;
+        return _repository.Persons.Include(p => p.Contracts).ToList();
     }
 
     [HttpPost]
-    public Person Post(Person person){
+    public Person Post([FromBody]Person person){
+        _repository.Persons.Add(person);
+        _repository.SaveChanges();
         return person;
     }
 
     [HttpPut("{id}")]
-    public string Update(int id) {
+    public string Update([FromRoute]int id, [FromBody]Person person) {
+        _repository.Persons.Update(person);
+        _repository.SaveChanges();
         return $"Id data {id} update";
     }
 
     [HttpDelete("{id}")]
-    public string Delete(int id) {
-        return $"Person {id} deleted";
+    public string Delete(int id, Person person) {
+        _repository.Persons.Remove(person);
+        _repository.SaveChanges();
+        return $"Person {id}, {person.Name} deleted";
     }
 }

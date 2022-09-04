@@ -11,6 +11,15 @@ public class Person
     public bool Active { get; set; }
     public List<Contract> Contracts { get; set; }
 
+
+    public Person()
+    {
+        Name = "template";
+        Age = 0;
+        CPF = "12312312312";
+        Active = true;
+        Contracts = new List<Contract>();
+    }
     public Person(string name, int age, string cpf)
     {
         Name = name;
